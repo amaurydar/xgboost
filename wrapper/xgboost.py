@@ -627,7 +627,8 @@ def train(params, dtrain, num_boost_round=10, evals=(), obj=None, feval=None, ea
                 bst.best_score = best_score
                 bst.best_iteration = best_score_i
                 return bst
-
+        bst.best_score = best_score
+        bst.best_iteration = best_score_i
         return bst
 
 
