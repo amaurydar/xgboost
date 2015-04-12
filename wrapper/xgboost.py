@@ -759,7 +759,7 @@ class XGBModel(BaseEstimator):
     silent : boolean
         Whether to print messages while running boosting.
     """
-    def __init__(self, max_depth=3, learning_rate=0.1, n_estimators=100, silent=True, objective="reg:linear"):
+    def __init__(self, max_depth=3, learning_rate=0.1, n_estimators=100, silent=True, objective="reg:linear", max_features=1, subsample = 1):
         if not SKLEARN_INSTALLED:
             raise Exception('sklearn needs to be installed in order to use this module')
         self.max_depth = max_depth
@@ -767,6 +767,8 @@ class XGBModel(BaseEstimator):
         self.silent = silent
         self.n_estimators = n_estimators
         self.objective = objective
+        self.max_features = max_features
+        self.subsample = subsample
         self._Booster = Booster()
 
     def get_params(self, deep=True):
@@ -774,14 +776,18 @@ class XGBModel(BaseEstimator):
                 'learning_rate': self.learning_rate,
                 'n_estimators': self.n_estimators,
                 'silent': self.silent,
-                'objective': self.objective
+                'objective': self.objective,
+                'max_features' : self.max_features,
+                'subsample' : self.subsample
                 }
 
     def get_xgb_params(self):
         return {'eta': self.learning_rate,
                 'max_depth': self.max_depth,
                 'silent': 1 if self.silent else 0,
-                'objective': self.objective
+                'objective': self.objective,
+                'bst:subsample': self.subsample,
+                'bst:colsample_bytree': self.max_features
                 }
 
     def fit(self, X, y):
@@ -795,8 +801,8 @@ class XGBModel(BaseEstimator):
 
 
 class XGBClassifier(XGBModel, ClassifierMixin):
-    def __init__(self, max_depth=3, learning_rate=0.1, n_estimators=100, silent=True, objective="binary:logistic"):
-        super(XGBClassifier, self).__init__(max_depth, learning_rate, n_estimators, silent, objective)
+    def __init__(self, max_depth=3, learning_rate=0.1, n_estimators=100, silent=True, objective="binary:logistic", max_features=1, subsample = 1):
+        super(XGBClassifier, self).__init__(max_depth, learning_rate, n_estimators, silent, objective, max_features, subsample)
 
     def fit(self, X, y, sample_weight=None):
         y_values = list(np.unique(y))
