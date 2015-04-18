@@ -701,7 +701,7 @@ def aggcv(rlist, show_stdv=True):
 
 
 def cv(params, dtrain, num_boost_round=10, nfold=3, metrics=(),
-       obj=None, feval=None, fpreproc=None, show_stdv=True, seed=0, return_all=False):
+       obj=None, feval=None, fpreproc=None, show_stdv=True, seed=0, return_all=False, early_stopping_rounds=None:
     """
     Cross-validation with given paramaters.
 
@@ -735,6 +735,11 @@ def cv(params, dtrain, num_boost_round=10, nfold=3, metrics=(),
     """
     results = []
     cvfolds = mknfold(dtrain, nfold, params, seed, metrics, fpreproc)
+
+    if not early_stopping_rounds:
+        assert early_stopping_rounds is int, "early_stopping_rounds must be an integer"
+    best_score = +np.inf
+    best_iteration = -1
     for i in range(num_boost_round):
         for f in cvfolds:
             f.update(i, obj)
@@ -745,6 +750,14 @@ def cv(params, dtrain, num_boost_round=10, nfold=3, metrics=(),
             results.append(res)
         else:
             results.append(res)
+        score = mean([float((f.eval(i, feval)).split(':')[2]) for f in cvfolds])
+        if score <= best_score:
+            best_score = score
+            best_iteration = i
+        if not early_stopping_rounds:
+            if (i-best_iteration)>=early_stopping_rounds:
+                break
+
     if return_all:
         return np.array(results)
     else:
