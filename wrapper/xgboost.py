@@ -750,7 +750,7 @@ def cv(params, dtrain, num_boost_round=10, nfold=3, metrics=(),
             results.append(res)
         else:
             results.append(res)
-        score = mean([float((f.eval(i, feval)).split(':')[2]) for f in cvfolds])
+        score = sum([float((f.eval(i, feval)).split(':')[2]) for f in cvfolds])/float(len(cvfols))
         if score <= best_score:
             best_score = score
             best_iteration = i
