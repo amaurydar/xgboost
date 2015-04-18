@@ -738,6 +738,7 @@ def cv(params, dtrain, num_boost_round=10, nfold=3, metrics=(),
     for i in range(num_boost_round):
         for f in cvfolds:
             f.update(i, obj)
+        print [f.eval(i, feval) for f in cvfolds]
         res = aggcv([f.eval(i, feval) for f in cvfolds], show_stdv)
         sys.stderr.write(res + '\n')
         results.append(res)
