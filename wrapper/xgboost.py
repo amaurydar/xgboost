@@ -701,7 +701,7 @@ def aggcv(rlist, show_stdv=True):
 
 
 def cv(params, dtrain, num_boost_round=10, nfold=3, metrics=(),
-       obj=None, feval=None, fpreproc=None, show_stdv=True, seed=0):
+       obj=None, feval=None, fpreproc=None, show_stdv=True, seed=0, return_all=False):
     """
     Cross-validation with given paramaters.
 
@@ -741,8 +741,14 @@ def cv(params, dtrain, num_boost_round=10, nfold=3, metrics=(),
         print [f.eval(i, feval) for f in cvfolds]
         res = aggcv([f.eval(i, feval) for f in cvfolds], show_stdv)
         sys.stderr.write(res + '\n')
-        results.append(res)
-    return results
+        if return_all:
+            res = [[float((f.eval(i, feval)).split(':')[2]), float((f.eval(i, feval)).split(':')[1].split('\t')[0])] for f in cvfolds]
+        else:
+            results.append(res)
+    if return_all:
+        return np.array(results)
+    else:
+        return results
 
 
 XGBModelBase = object
