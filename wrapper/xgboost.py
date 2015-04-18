@@ -701,7 +701,7 @@ def aggcv(rlist, show_stdv=True):
 
 
 def cv(params, dtrain, num_boost_round=10, nfold=3, metrics=(),
-       obj=None, feval=None, fpreproc=None, show_stdv=True, seed=0, return_all=False, early_stopping_rounds=None:
+       obj=None, feval=None, fpreproc=None, show_stdv=True, seed=0, return_all=False, early_stopping_rounds=None):
     """
     Cross-validation with given paramaters.
 
