@@ -737,7 +737,7 @@ def cv(params, dtrain, num_boost_round=10, nfold=3, metrics=(),
     cvfolds = mknfold(dtrain, nfold, params, seed, metrics, fpreproc)
 
     if early_stopping_rounds:
-        assert early_stopping_rounds is int, "early_stopping_rounds must be an integer"
+        assert type(early_stopping_rounds) is int, "early_stopping_rounds must be an integer, %s is %s" % early_stopping_rounds
     best_score = +np.inf
     best_iteration = -1
     for i in range(num_boost_round):
