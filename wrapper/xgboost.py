@@ -736,7 +736,7 @@ def cv(params, dtrain, num_boost_round=10, nfold=3, metrics=(),
     results = []
     cvfolds = mknfold(dtrain, nfold, params, seed, metrics, fpreproc)
 
-    if not early_stopping_rounds:
+    if early_stopping_rounds:
         assert early_stopping_rounds is int, "early_stopping_rounds must be an integer"
     best_score = +np.inf
     best_iteration = -1
@@ -754,7 +754,7 @@ def cv(params, dtrain, num_boost_round=10, nfold=3, metrics=(),
         if score <= best_score:
             best_score = score
             best_iteration = i
-        if not early_stopping_rounds:
+        if early_stopping_rounds:
             if (i-best_iteration)>=early_stopping_rounds:
                 break
 
