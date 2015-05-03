@@ -529,7 +529,7 @@ class Booster(object):
         return fmap
 
 
-def train(params, dtrain, num_boost_round=10, evals=(), obj=None, feval=None, early_stopping_rounds=None):
+def train(params, dtrain, num_boost_round=10, evals=(), obj=None, feval=None, early_stopping_rounds=None, return_all=False):
     """
     Train a booster with given parameters.
 
@@ -564,17 +564,23 @@ def train(params, dtrain, num_boost_round=10, evals=(), obj=None, feval=None, ea
 
     evals = list(evals)
     bst = Booster(params, [dtrain] + [d[0] for d in evals])
-
+    results = []
+    
     if not early_stopping_rounds:
         for i in range(num_boost_round):
             bst.update(dtrain, i, obj)
+            res = [[float((bst.eval(i, feval)).split(':')[2]), float((bst.eval(i, feval)).split(':')[1].split('\t')[0])]]
+            results.append(res)
             if len(evals) != 0:
                 bst_eval_set = bst.eval_set(evals, i, feval)
                 if isinstance(bst_eval_set, string_types):
                     sys.stderr.write(bst_eval_set + '\n')
                 else:
                     sys.stderr.write(bst_eval_set.decode() + '\n')
-        return bst
+        if return_all:
+            return np.array(results)
+        else:
+            return bst
 
     else:
         # early stopping
@@ -608,7 +614,9 @@ def train(params, dtrain, num_boost_round=10, evals=(), obj=None, feval=None, ea
         for i in range(num_boost_round):
             bst.update(dtrain, i, obj)
             bst_eval_set = bst.eval_set(evals, i, feval)
-
+            res = [[float((bst.eval(i, feval)).split(':')[2]), float((bst.eval(i, feval)).split(':')[1].split('\t')[0])]]
+            results.append(res)
+            
             if isinstance(bst_eval_set, string_types):
                 msg = bst_eval_set
             else:
@@ -633,7 +641,10 @@ def train(params, dtrain, num_boost_round=10, evals=(), obj=None, feval=None, ea
         bst.best_iteration = best_score_i
         bst.score = score
         bst.iteration = i
-        return bst
+        if return_all:
+            return np.array(results)
+        else:
+            return bst
 
 
 class CVPack(object):
